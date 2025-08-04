@@ -10,9 +10,12 @@ variables:
     value: 'dev.auto.tfvars'
   - name: adoEnvironment
     value: 'dev'
-  resourceGroup: 'AZ400-RG1'
-  location: 'centralus'
-  azureServiceConnection: 'azure subs'
+  - name: resourceGroup
+    value: 'AZ400-RG1'
+  - name: location
+    value: 'centralus'
+  - name: azureserviceconnection
+    value: 'azure subs'
 
 stages:
 - stage: 'Terraform_Plan'
