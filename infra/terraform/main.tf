@@ -10,7 +10,7 @@
 
 resource "azurerm_linux_virtual_machine" "vm1" {
   name                            = "az400cb-vm1"
-  resource_group_name             = AZ400-EWebShop
+  resource_group_name             = "AZ400-RG1"
   location                        = centralus
   size                            = "Standard_B1s"
   computer_name                   = "az400cb-vm1"
