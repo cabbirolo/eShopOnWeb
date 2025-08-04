@@ -1,0 +1,54 @@
+name: Terraform - Deploy Resources to DEV
+
+trigger: none
+
+variables:
+  - group: terraform-azure-ado_dev_vars
+  - name: rootFolder
+    value: '.'
+  - name: tfvarsFile
+    value: 'dev.auto.tfvars'
+  - name: adoEnvironment
+    value: 'dev'
+  resourceGroup: 'AZ400-RG1'
+  location: 'centralus'
+  azureServiceConnection: 'azure subs'
+
+stages:
+- stage: 'Terraform_Plan'
+  displayName: 'Terraform Plan'
+  jobs:
+  - job: 'Terraform_Plan'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        echo "Running Terraform init..."
+        terraform init
+        echo "Running Terraform plan..."
+        terraform plan
+      displayName: 'Terraform plan'
+      workingDirectory: $(rootFolder)
+
+- stage: 'Terraform_Apply'
+  displayName: 'Terraform Apply'
+  dependsOn:
+  - 'Terraform_Plan'
+  condition: succeeded()
+  jobs:
+  - deployment: 'Terraform_Apply'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: $(adoEnvironment) # using an ADO environment allows us to add a manual approval check
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - script: |
+              echo "Running Terraform init..."
+              terraform init
+              echo "Running Terraform apply..."
+              terraform apply -auto-approve
+            displayName: 'Terraform apply'
+            workingDirectory: $(rootFolder)
